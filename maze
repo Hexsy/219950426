@@ -1,0 +1,97 @@
+#include <windows.h>
+#include <stdio.h>
+#include <conio.h>
+int main()
+{
+	char str[9][12] =      //设计迷宫样式
+		{"*#*********"
+		,"***###*###*"
+		,"###**#****#"
+		,"*#**###**#*"
+		,"***********"
+		,"#####*##*##"
+		,"**#*****#*E"
+		,"***#*###**#"
+		,"*#*********" };
+	void gotoxy(int x, int y);
+	
+	int i, j;
+
+	printf("请用↑↓←→键走出迷宫，成功逃离地图\n");
+
+	printf("任意键开始游戏");
+
+	if (getch())
+	{
+		system("cls");       //清除屏幕上的所有字符
+		system("color A4");  //设计背景和字体颜色
+	}
+	for (i = 0; i < 9; i++) //打印迷宫
+	{
+		for (j = 0; j < 12; j++)
+		{
+			printf("%c", str[i][j]);
+		}
+		printf("\n");
+	}
+	int move_x = 0, move_y = 0;
+	gotoxy(0, 0);
+	while (1)
+	{
+
+		char t = getch();//字符输入不显示
+		switch (t)//光标移动
+		{
+		case 72:move_y--; break;//向上走
+		case 75:move_x--; break;//向左走
+		case 77:move_x++; break;//向右走
+		case 80:move_y++; break;//向下走
+		}
+		gotoxy(move_x, move_y);
+		if (str[move_y][move_x] == '#')//判断高墙“#”
+		{
+			switch (t)//是高墙“#”则无法越过。
+			{
+			case 72:move_y++; break; 
+			case 75:move_x++; break; 
+			case 77:move_x--; break;
+			case 80:move_y--; break;
+			}
+			gotoxy(move_x, move_y);//控制光标的位置在坐标点
+		}
+		else//判断迷宫边界，使其无法越过边界；
+		{
+			if (move_x < 0)
+				move_x++;
+			if (move_x > 10)
+				move_x--;
+			if (move_y < 0)
+				move_y++;
+			if (move_y > 8)
+				move_y--;
+			gotoxy(move_x, move_y);
+		}
+		gotoxy(1, 9);//输出坐标到指定的位置
+		{
+			printf("x=%d,y=%d", move_x, move_y);
+		}
+		gotoxy(move_x, move_y);
+
+		if (str[move_y][move_x] == 'E')//出口
+		{
+			gotoxy(1, 10);
+			printf("恭喜你成功走出小岛\n"); 
+			system("color E9");break;//跳出循环，游戏结束
+			
+		}
+	}
+
+	return 0;
+}
+void gotoxy(int x, int y)  //定义光标坐标函数
+{
+	COORD pos;
+	pos.X = x;
+	pos.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+}
